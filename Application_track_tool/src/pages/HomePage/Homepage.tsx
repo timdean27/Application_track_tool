@@ -1,28 +1,79 @@
-import React, { useState } from 'react';
-import { Button, VStack, Text, Input, FormControl, FormLabel,Checkbox, Textarea } from "@chakra-ui/react";
-import DatePicker from 'react-datepicker';
-import { FaCalendarAlt } from 'react-icons/fa';
-import 'react-datepicker/dist/react-datepicker.css';
+import React, { useState } from "react";
+import {
+  Button,
+  VStack,
+  Text,
+  Input,
+  FormControl,
+  FormLabel,
+  Checkbox,
+} from "@chakra-ui/react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
-const Homepage: React.FC = () => {
-  const [jobTitle, setJobTitle] = useState('');
-  const [company, setCompany] = useState('');
-  const [jobPostingLink, setJobPostingLink] = useState('');
-  const [resume, setResume] = useState('');
-  const [coverLetter, setCoverLetter] = useState('');
-  const [screeningInterview, setScreeningInterview] = useState('');
-  const [dateOfScreeningInterview, setDateOfScreeningInterview] = useState<Date | null>(null);
-  const [codingInterview, setCodingInterview] = useState('');
-
-  const [dateOfCodingInterview, setDateOfCodingInterview] = useState<Date | null>(null);
-  const [behaviorInterview, setBehaviorInterview] = useState('');
-  const [dateOfBehaviorInterview, setDateOfBehaviorInterview] = useState<Date | null>(null);
+const Homepage: React.FC = ({ jobs, addJob, updateJob, deleteJob }) => {
+  const [jobTitle, setJobTitle] = useState("");
+  const [company, setCompany] = useState("");
+  const [jobPostingLink, setJobPostingLink] = useState("");
+  const [resume, setResume] = useState("");
+  const [coverLetter, setCoverLetter] = useState("");
+  const [screeningInterview, setScreeningInterview] = useState(false);
+  const [dateOfScreeningInterview, setDateOfScreeningInterview] =
+    useState<Date | null>(null);
+  const [codingInterview, setCodingInterview] = useState(false);
+  const [dateOfCodingInterview, setDateOfCodingInterview] =
+    useState<Date | null>(null);
+  const [behaviorInterview, setBehaviorInterview] = useState(false);
+  const [dateOfBehaviorInterview, setDateOfBehaviorInterview] =
+    useState<Date | null>(null);
   const [dateApplied, setDateApplied] = useState<Date | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false); // State to control visibility of date picker
 
-  const handleUpdate = () => {
-    // Add your logic to handle the update here
-    console.log("Update button clicked!");
-    // You can use the state values (jobTitle, company, etc.) for further processing
+  const handleAddJob = async () => {
+    try {
+      // Prepare job data
+      const jobData = {
+        jobTitle,
+        company,
+        jobPostingLink,
+        resume,
+        coverLetter,
+        screeningInterview: screeningInterview ? "Yes" : "No",
+        dateOfScreeningInterview,
+        codingInterview: codingInterview ? "Yes" : "No",
+        dateOfCodingInterview,
+        behaviorInterview: behaviorInterview ? "Yes" : "No",
+        dateOfBehaviorInterview,
+        dateApplied,
+      };
+
+      await addJob(jobData);
+      // Reset form fields after successful addition
+      setJobTitle("");
+      setCompany("");
+      setJobPostingLink("");
+      setResume("");
+      setCoverLetter("");
+      setScreeningInterview(false);
+      setDateOfScreeningInterview(null);
+      setCodingInterview(false);
+      setDateOfCodingInterview(null);
+      setBehaviorInterview(false);
+      setDateOfBehaviorInterview(null);
+      setDateApplied(null);
+    } catch (error) {
+      console.error("Error adding job:", error);
+    }
+  };
+
+  const handleUpdateJob = async () => {
+    // Add your implementation for updating a job
+    console.log("Update job functionality");
+  };
+
+  const handleDeleteJob = async () => {
+    // Add your implementation for deleting a job
+    console.log("Delete job functionality");
   };
 
   return (
@@ -42,25 +93,11 @@ const Homepage: React.FC = () => {
       </FormControl>
 
       <FormControl>
-        <Text onClick={() => document.getElementById('appliedDatePicker')?.click()}>
-          Date Applied
-          <FaCalendarAlt
-            style={{
-              marginLeft: '5px',
-              cursor: 'pointer',
-            }}
-          />
-        </Text>
-        <DatePicker
-          id="appliedDatePicker"
-          selected={dateApplied}
-          onChange={(date) => setDateApplied(date)}
-          style={{ display: 'none' }} // hide the DatePicker initially
-        />
-      </FormControl>
-      <FormControl>
         <FormLabel>Job Posting Link</FormLabel>
-        <Input value={jobPostingLink} onChange={(e) => setJobPostingLink(e.target.value)} />
+        <Input
+          value={jobPostingLink}
+          onChange={(e) => setJobPostingLink(e.target.value)}
+        />
       </FormControl>
 
       <FormControl>
@@ -70,88 +107,78 @@ const Homepage: React.FC = () => {
 
       <FormControl>
         <FormLabel>Cover Letter</FormLabel>
-        <Textarea value={coverLetter} onChange={(e) => setCoverLetter(e.target.value)} />
-      </FormControl>
-
-      <Checkbox
-  colorScheme='green'
-  isChecked={!!screeningInterview}
-  onChange={(e) => setScreeningInterview(e.target.checked)}
->
-  Screening Interview
-</Checkbox>
-
-      <FormControl>
-        <Text onClick={() => document.getElementById('ScreeninginterviewDatePicker')?.click()}>
-          Date of Screening Interview
-          <FaCalendarAlt
-            style={{
-              marginLeft: '5px',
-              cursor: 'pointer',
-            }}
-          />
-        </Text>
-        <DatePicker
-          id="ScreeninginterviewDatePicker"
-          selected={dateOfScreeningInterview}
-          onChange={(date) => setDateOfScreeningInterview(date)}
-          style={{ display: 'none' }} // hide the DatePicker initially
+        <Input
+          value={coverLetter}
+          onChange={(e) => setCoverLetter(e.target.value)}
         />
       </FormControl>
 
       <Checkbox
-  colorScheme='green'
-  isChecked={!!codingInterview}
-  onChange={(e) => setCodingInterview(e.target.checked)}
->
-  Coding Interview
-</Checkbox>
+        colorScheme="green"
+        isChecked={screeningInterview}
+        onChange={(e) => setScreeningInterview(e.target.checked)}
+      >
+        Screening Interview
+      </Checkbox>
 
-      <FormControl>
-        <Text onClick={() => document.getElementById('CodinginterviewDatePicker')?.click()}>
-          Date of Coding Interview
-          <FaCalendarAlt
-            style={{
-              marginLeft: '5px',
-              cursor: 'pointer',
-            }}
-          />
-        </Text>
-        <DatePicker
-          id="CodinginterviewDatePicker"
-          selected={dateOfCodingInterview}
-          onChange={(date) => setDateOfCodingInterview(date)}
-          style={{ display: 'none' }} // hide the DatePicker initially
-        />
-      </FormControl>
+      <DatePicker
+        showIcon
+        showTimeSelect
+        selected={dateOfScreeningInterview}
+        onChange={(date) => {
+          console.log(date); // Log out the selected date
+          setDateOfScreeningInterview(date); // Update the state with the selected date
+        }}
+        isClearable
+        dateFormat="Pp"
+        placeholderText="MM/dd/yyyy Time"
+      />
 
       <Checkbox
-  colorScheme='green'
-  isChecked={!!behaviorInterview}
-  onChange={(e) => setBehaviorInterview(e.target.checked)}
->
-  Behavior Interview
-</Checkbox>
+        colorScheme="green"
+        isChecked={codingInterview}
+        onChange={(e) => setCodingInterview(e.target.checked)}
+      >
+        Coding Interview
+      </Checkbox>
 
-      <FormControl>
-        <Text onClick={() => document.getElementById('BehaviorinterviewDatePicker')?.click()}>
-          Date of Behavior Interview
-          <FaCalendarAlt
-            style={{
-              marginLeft: '5px',
-              cursor: 'pointer',
-            }}
-          />
-        </Text>
-        <DatePicker
-          id="BehaviorinterviewDatePicker"
-          selected={dateOfBehaviorInterview}
-          onChange={(date) => setDateOfBehaviorInterview(date)}
-          style={{ display: 'none' }} // hide the DatePicker initially
-        />
-      </FormControl>
+      <DatePicker
+        showIcon
+        showTimeSelect
+        selected={dateOfCodingInterview}
+        onChange={(date) => {
+          console.log(date); // Log out the selected date
+          setDateOfCodingInterview(date); // Update the state with the selected date
+        }}
+        isClearable
+        dateFormat="Pp"
+        placeholderText="MM/dd/yyyy Time"
+      />
 
-      <Button onClick={handleUpdate}>Update</Button>
+      <Checkbox
+        colorScheme="green"
+        isChecked={behaviorInterview}
+        onChange={(e) => setBehaviorInterview(e.target.checked)}
+      >
+        Behavior Interview
+      </Checkbox>
+
+      <DatePicker
+        showIcon
+        showTimeSelect
+        selected={dateOfBehaviorInterview}
+        onChange={(date) => {
+          console.log(date); // Log out the selected date
+          setDateOfBehaviorInterview(date); // Update the state with the selected date
+        }}
+        isClearable
+        dateFormat="Pp"
+        placeholderText="MM/dd/yyyy Time"
+      />
+
+      <Button onClick={handleAddJob}>Add Job</Button>
+      <Button onClick={handleUpdateJob}>Update Job</Button>
+      <Button onClick={handleDeleteJob}>Delete Job</Button>
     </VStack>
   );
 };
