@@ -1,19 +1,20 @@
-// App.tsx
-import React, { useState, useEffect } from 'react';
-import { Route, Routes } from 'react-router-dom';
-import HomePage from './pages/HomePage/Homepage';
-
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import AddJobPage from './pages/AddJobPage/AddJobPage';
+import AllJobsPage from './pages/AllJobsPage/AllJobsPage'; // Import the AllJobsPage component
 import ThemeContext from './Theme/ThemeContext';
-import axios from 'axios';
 
 function App() {
-
   return (
-    <ThemeContext>
-      <Routes>
-        <Route path='/' element={<HomePage />} />
-      </Routes>
-    </ThemeContext>
+    <Router>
+      <ThemeContext>
+        <Routes>
+          <Route path="/" element={<AddJobPage />} />
+          <Route path="/all-jobs" element={<AllJobsPage />} /> {/* Route for all jobs page */}
+        </Routes>
+        <Link to="/all-jobs">Show All Jobs</Link> {/* Link to the all jobs page */}
+      </ThemeContext>
+    </Router>
   );
 }
 

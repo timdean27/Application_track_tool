@@ -1,50 +1,35 @@
-// main.tsx
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import {
-  ChakraProvider,
-  ColorModeScript,
-  extendTheme,
-  useColorMode,
-  Button,
-} from '@chakra-ui/react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { ThemeProvider, createTheme, CssBaseline, Button } from '@mui/material';
 import App from './App';
 
-const styles = {
-  global: (props: any) => ({
-    body: {
-      bg: props.colorMode === 'light' ? '#FFFEFD' : 'gray.500',
-      color: props.colorMode === 'light' ? 'darkgreen' : 'whiteAlpha.900',
+// Define your Material-UI theme
+const theme = createTheme({
+  palette: {
+    mode: 'light', // Set the initial color mode
+    background: {
+      default: '#FFFEFD', // Light mode background color
+      paper: '#FFFFFF', // Light mode paper color
     },
-  }),
-};
-const config = {
-  initialColorMode: 'light',
-  useSystemColorMode: false,
-};
-
-const theme = extendTheme({ config, styles });
+    primary: {
+      main: '#006400', // Dark green color
+    },
+  },
+});
 
 const reactRoot = createRoot(document.getElementById('root'));
 
 const ColorModeToggle = () => {
-  const { toggleColorMode } = useColorMode();
-  return (
-    <Button onClick={toggleColorMode} position="fixed" top="1rem" right="1rem">
-      Toggle Theme
-    </Button>
-  );
+  // You can implement your own color mode toggle logic if needed
+  return null;
 };
 
 reactRoot.render(
   <React.StrictMode>
-    <ChakraProvider theme={theme}>
-      <Router>
-        <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-        <ColorModeToggle />
-        <App />
-      </Router>
-    </ChakraProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline /> {/* Apply Material-UI's baseline styles */}
+      <ColorModeToggle />
+      <App />
+    </ThemeProvider>
   </React.StrictMode>,
 );
