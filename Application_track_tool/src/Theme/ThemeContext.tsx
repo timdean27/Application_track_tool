@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex } from '@chakra-ui/react';
+import { Container, Grid } from '@mui/material'; // Import Material-UI components
 
 interface ThemeContextProps {
   children: React.ReactNode;
@@ -7,11 +7,13 @@ interface ThemeContextProps {
 
 const ThemeContext: React.FC<ThemeContextProps> = ({ children }) => {
   return (
-    <Flex>
-      <Box flex={1} w={{ base: 'calc(100% - 70px)', md: 'calc(100% - 240px)' }} boxShadow="2xl">
-        {children}
-      </Box>
-    </Flex>
+    <Grid container>
+      <Grid item xs={12}>
+        <Container maxWidth="lg" sx={{ boxShadow: '2xl' }}>
+          {children}
+        </Container>
+      </Grid>
+    </Grid>
   );
 };
 
