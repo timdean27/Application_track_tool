@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import axios from "axios";
 import {
   Card,
@@ -9,7 +9,7 @@ import {
   Button,
   Box,
 } from "@mui/material";
-import UpdateJobForm from "../../Components/UpdateJobForm ";
+import UpdateJobForm from "../../Components/UpdateJobForm";
 
 const BASE_URL = "http://54.158.192.60:8090";
 
@@ -155,6 +155,9 @@ const AllJobsPage: React.FC = () => {
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Date Followed Up: {job.dateFollowedUp}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Declined: {job.declined ? "True" : "False"}
                   </Typography>
                 </>
               )}
