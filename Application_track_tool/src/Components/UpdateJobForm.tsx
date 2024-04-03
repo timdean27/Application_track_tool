@@ -103,8 +103,8 @@ const UpdateJobForm = ({ job, onUpdate }) => {
         <TextField
           label="Date of Screening Interview"
           type="date"
-          placeholder={job.dateOfScreeningInterview}
-          value = {updatedJob.dateOfScreeningInterview}
+          
+          value = {updatedJob.dateOfScreeningInterview ? updatedJob.dateOfScreeningInterview :"mm/dd/yyyy" }
           onChange={(e) => handleChange(e, 'dateOfScreeningInterview')}
           fullWidth
         />
@@ -122,8 +122,7 @@ const UpdateJobForm = ({ job, onUpdate }) => {
         <TextField
           label="Date of Coding Interview"
           type="date"
-          placeholder={job.dateOfCodingInterview}
-          value = {updatedJob.dateOfCodingInterview}
+          value = {updatedJob.dateOfCodingInterview ? updatedJob.dateOfCodingInterview :"mm/dd/yyyy" }
           onChange={(e) => handleChange(e, 'dateOfCodingInterview')}
           fullWidth
         />
@@ -140,9 +139,8 @@ const UpdateJobForm = ({ job, onUpdate }) => {
       <Grid item xs={12} sm={6}>
         <TextField
           label="Date of Behavior Interview"
-          type="date"
-          placeholder={job.dateOfBehaviorInterview}
-          value = {updatedJob.dateOfBehaviorInterview}
+          type="date" 
+          value = {updatedJob.dateOfBehaviorInterview ? updatedJob.dateOfBehaviorInterview :"mm/dd/yyyy" }
           onChange={(e) => handleChange(e, 'dateOfBehaviorInterview')}
           fullWidth
         />
@@ -152,7 +150,7 @@ const UpdateJobForm = ({ job, onUpdate }) => {
           label="Date Applied"
           type="date"
           placeholder={job.dateApplied}
-          value = {updatedJob.dateApplied}
+          value = {updatedJob.dateApplied ? updatedJob.dateApplied :"mm/dd/yyyy" }
           onChange={(e) => handleChange(e, 'dateApplied')}
           fullWidth
         />
@@ -180,7 +178,7 @@ const UpdateJobForm = ({ job, onUpdate }) => {
           label="Date Followed Up"
           type="date"
           placeholder={job.dateFollowedUp}
-          value = {updatedJob.dateFollowedUp}
+          value = {updatedJob.dateFollowedUp ? updatedJob.dateFollowedUp :"mm/dd/yyyy" }
           onChange={(e) => handleChange(e, 'dateFollowedUp')}
           fullWidth
         />
