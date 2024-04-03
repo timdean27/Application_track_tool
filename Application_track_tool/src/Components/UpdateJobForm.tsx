@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { TextField, Button, Grid, Typography, Divider } from '@mui/material';
+import { TextField, Button, Grid, Typography, Switch,FormControlLabel, Divider } from '@mui/material';
 
 const UpdateJobForm = ({ job, onUpdate }) => {
   const [updatedJob, setUpdatedJob] = useState(job);
 
   const handleChange = (e, field) => {
     setUpdatedJob({ ...updatedJob, [field]: e.target.value });
+  };
+  const handleDeclinedChange = (e) => {
+    setUpdatedJob({ ...updatedJob, declined: e.target.checked });
   };
 
   const handleSubmit = () => {
@@ -45,6 +48,19 @@ const UpdateJobForm = ({ job, onUpdate }) => {
           value = {updatedJob.company}
           onChange={(e) => handleChange(e, 'company')}
           fullWidth
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+   
+        <FormControlLabel
+          control={
+            <Switch
+              checked={updatedJob.declined || false}
+              onChange={handleDeclinedChange}
+              color="primary"
+            />
+          }
+          label="Declined"
         />
       </Grid>
       <Grid item xs={12} sm={6}>
