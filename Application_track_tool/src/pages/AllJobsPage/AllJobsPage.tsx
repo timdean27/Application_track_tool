@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import UpdateJobForm from "../../Components/UpdateJobForm ";
 
-const BASE_URL = "http://34.238.240.254:8090/";
+const BASE_URL = "http://54.158.192.60:8090";
 
 const AllJobsPage: React.FC = () => {
   const [jobs, setJobs] = useState<any[]>([]);
@@ -94,15 +94,18 @@ const AllJobsPage: React.FC = () => {
   return (
     <div>
       <div>
-      <h1>All Jobs</h1>
-      <Link to="/">Add New Job</Link>
-
-    </div>
+        <h1>All Jobs</h1>
+        <Link to="/">Add New Job</Link>
+      </div>
       <div style={{ display: "flex", flexWrap: "wrap" }}>
         {jobs.map((job) => (
           <Card
             key={job.id}
-            sx={{ maxWidth: 345, margin: 1 }}
+            sx={{
+              maxWidth: 345,
+              margin: 1,
+              backgroundColor: job.declined ? "#ffcccc" : "",
+            }}
             onClick={() => toggleJobExpansion(job.id)}
           >
             <CardContent>

@@ -7,16 +7,18 @@ import {
   Stack,
   Typography,
   Grid,
+  Checkbox,
 } from "@mui/material";
 import axios from "axios";
 
-const BASE_URL = "http://34.238.240.254:8090/";
+const BASE_URL = "http://54.158.192.60:8090";
 
 const AddJobPage = () => {
   
   const [job, setJob] = useState("");
   const [description, setDescription] = useState("");
   const [company, setCompany] = useState("");
+  const [declined, setDeclined] = useState(false); // State for declined option
   const [jobPostingLink, setJobPostingLink] = useState("");
   const [resume, setResume] = useState("");
   const [coverLetter, setCoverLetter] = useState("");
@@ -38,6 +40,7 @@ const AddJobPage = () => {
         job,
         description,
         company,
+        declined, // Include declined option in the data object
         jobPostingLink,
         resume,
         coverLetter,
@@ -63,12 +66,13 @@ const AddJobPage = () => {
           : null,
       };
 
-      await axios.post(`${BASE_URL}jobapplication/add`, jobData);
+      await axios.post(`${BASE_URL}/jobapplication/add`, jobData);
 
       // Reset form fields after successful submission
       setJob("");
       setDescription("");
       setCompany("");
+      setDeclined(false); // Reset declined option
       setJobPostingLink("");
       setResume("");
       setCoverLetter("");
@@ -116,6 +120,14 @@ const AddJobPage = () => {
             <Input
               value={company}
               onChange={(e) => setCompany(e.target.value)}
+            />
+          </FormControl>
+
+          <FormControl fullWidth>
+            <FormLabel>Declined</FormLabel>
+            <Checkbox
+              checked={declined}
+              onChange={(e) => setDeclined(e.target.checked)}
             />
           </FormControl>
 
@@ -261,4 +273,3 @@ const AddJobPage = () => {
     };
     
     export default AddJobPage;
-    
