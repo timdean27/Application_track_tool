@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+// Import necessary modules and components
+import  { useState, useEffect } from "react";
 import axios from "axios";
 import {
   Card,
@@ -11,9 +12,12 @@ import {
 } from "@mui/material";
 import UpdateJobForm from "../../Components/UpdateJobForm";
 
+// Define base URL for API requests
 const BASE_URL = "http://54.158.192.60:8090";
 
+// Define functional component for AllJobsPage
 const AllJobsPage: React.FC = () => {
+  // Define state variables
   const [jobs, setJobs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
@@ -21,21 +25,23 @@ const AllJobsPage: React.FC = () => {
   const [isUpdateFormOpen, setIsUpdateFormOpen] = useState<boolean>(false);
   const [expandedJobs, setExpandedJobs] = useState<Record<string, boolean>>({});
 
+  // Define useEffect hook to fetch jobs data on component mount
   useEffect(() => {
     fetchJobs();
   }, []);
 
+  // Define function to fetch jobs data from API
   const fetchJobs = async () => {
     try {
       setIsLoading(true);
       const response = await axios.get(`${BASE_URL}/jobapplication`);
       setJobs(response.data);
       setIsLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       setIsLoading(false);
-      if (error.response) {
+      if (axios.isAxiosError(error) && error.response) {
         setError("Error: " + error.response.data);
-      } else if (error.request) {
+      } else if (axios.isAxiosError(error) && error.request) {
         setError("Error: No response received from the server");
       } else {
         setError("Error: " + error.message);
@@ -43,6 +49,7 @@ const AllJobsPage: React.FC = () => {
     }
   };
 
+  // Define function to delete a job by ID
   const handleDeleteJob = async (id: string) => {
     try {
       await axios.delete(`${BASE_URL}/jobapplication/${id}`);
@@ -52,6 +59,7 @@ const AllJobsPage: React.FC = () => {
     }
   };
 
+  // Define function to update a job
   const handleUpdateJob = async (updatedJob: any) => {
     try {
       await axios.put(
@@ -64,7 +72,8 @@ const AllJobsPage: React.FC = () => {
       console.error("Error updating job:", error);
     }
   };
-  
+
+  // Define function to handle job selection
   const handleJobSelect = (jobId: string) => {
     if (selectedJobId === jobId) {
       setSelectedJobId(null);
@@ -75,6 +84,7 @@ const AllJobsPage: React.FC = () => {
     }
   };
 
+  // Define function to toggle job expansion
   const toggleJobExpansion = (id: string) => {
     setExpandedJobs((prevState) => ({
       ...prevState,
@@ -82,14 +92,19 @@ const AllJobsPage: React.FC = () => {
     }));
   };
 
+  // Render loading spinner while data is being fetched
   if (isLoading) {
     return <CircularProgress />;
   }
 
+  // Render error message if an error occurred
   if (error) {
-    return <div>Error: {error}</div>;
+    return <Typography variant="body1">Error: {error}</Typography>;
   }
 
+
+  
+  // Render job cards and update form
   return (
     <div>
       <Grid container spacing={2}>
@@ -159,6 +174,7 @@ const AllJobsPage: React.FC = () => {
                   </>
                 )}
                 <Box mt={2} sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  {/* Buttons for deleting and updating job */}
                   <Button
                     variant="contained"
                     color="primary"
@@ -170,9 +186,10 @@ const AllJobsPage: React.FC = () => {
                     variant="contained"
                     color="secondary"
                     style={{ marginLeft: "8px" }}
-                    onClick={(e) =>   {
-                    e.stopPropagation();
-                    handleJobSelect(job.id)}}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleJobSelect(job.id);
+                    }}
                   >
                     Update
                   </Button>
@@ -182,6 +199,7 @@ const AllJobsPage: React.FC = () => {
           </Grid>
         ))}
       </Grid>
+      {/* Render update job form if update form is open */}
       {isUpdateFormOpen && (
         <div style={{ marginTop: "20px" }}>
           <UpdateJobForm

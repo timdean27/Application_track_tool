@@ -1,4 +1,4 @@
-import React from "react";
+
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AddJobPage from "./pages/AddJobPage/AddJobPage";
 import AllJobsPage from "./pages/AllJobsPage/AllJobsPage";
@@ -14,6 +14,7 @@ function App() {
           <SideBar />
           {/* Define a container for the content area */}
           <div style={{ marginLeft: "200px", flexGrow: 1 }}>
+            {/* Wrap Routes inside a Routes element */}
             <Routes>
               {/* Define routes */}
               <Route path="/" element={<AddJobPage />} />
@@ -27,4 +28,3 @@ function App() {
 }
 
 export default App;
-

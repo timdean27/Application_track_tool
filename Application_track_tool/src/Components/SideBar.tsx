@@ -1,4 +1,4 @@
-import React from "react";
+
 import { Link, useLocation } from "react-router-dom";
 import { Button, Box } from "@mui/material";
 
@@ -20,14 +20,12 @@ function SideBar() {
       flexDirection="column"
       alignItems="flex-start"
     >
-      {/* Show All Jobs button only if not on "/all-jobs" page */}
       {location.pathname !== "/all-jobs" && (
         <Button
           variant="contained"
+          fullWidth
           component={Link}
           to="/all-jobs"
-          mb="8px"
-          fullWidth
         >
           All Jobs
         </Button>
@@ -36,11 +34,9 @@ function SideBar() {
       {location.pathname !== "/" && ( // Show only if not on Add New Job page
         <Button
           variant="contained"
-          component={Link}
-          to="/"
-          mb="8px" 
-          fullWidth 
-        >
+          fullWidth
+          component={Link} 
+          to="/">
           Add New Job
         </Button>
       )}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from 'react';
 import {
   Button,
   FormControl,
@@ -15,24 +15,28 @@ import axios from "axios";
 const BASE_URL = "http://54.158.192.60:8090";
 
 const AddJobPage = () => {
-  const [job, setJob] = useState("");
-  const [description, setDescription] = useState("");
-  const [company, setCompany] = useState("");
-  const [declined, setDeclined] = useState(false); // State for declined option
-  const [jobPostingLink, setJobPostingLink] = useState("");
-  const [resume, setResume] = useState("");
-  const [coverLetter, setCoverLetter] = useState("");
-  const [screeningInterview, setScreeningInterview] = useState("");
+  const [job, setJob] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [company, setCompany] = useState<string>("");
+  const [declined, setDeclined] = useState<boolean>(false); // State for declined option
+  const [jobPostingLink, setJobPostingLink] = useState<string>("");
+  const [resume, setResume] = useState<string>("");
+  const [coverLetter, setCoverLetter] = useState<string>("");
+  const [screeningInterview, setScreeningInterview] = useState<string>("");
   const [dateOfScreeningInterview, setDateOfScreeningInterview] =
-    useState(null);
-  const [codingInterview, setCodingInterview] = useState("");
-  const [dateOfCodingInterview, setDateOfCodingInterview] = useState(null);
-  const [behaviorInterview, setBehaviorInterview] = useState("");
-  const [dateOfBehaviorInterview, setDateOfBehaviorInterview] = useState(null);
-  const [dateApplied, setDateApplied] = useState(null);
-  const [followupForInformation, setFollowupForInformation] = useState("");
-  const [adviceReceived, setAdviceReceived] = useState("");
-  const [dateFollowedUp, setDateFollowedUp] = useState(null);
+    useState<Date | null>(null);
+  const [codingInterview, setCodingInterview] = useState<string>("");
+  const [dateOfCodingInterview, setDateOfCodingInterview] =
+    useState<Date | null>(null);
+  const [behaviorInterview, setBehaviorInterview] = useState<string>("");
+  const [dateOfBehaviorInterview, setDateOfBehaviorInterview] =
+    useState<Date | null>(null);
+  const [dateApplied, setDateApplied] = useState<Date | null>(null);
+  const [followupForInformation, setFollowupForInformation] = useState<string>(
+    ""
+  );
+  const [adviceReceived, setAdviceReceived] = useState<string>("");
+  const [dateFollowedUp, setDateFollowedUp] = useState<Date | null>(null);
 
   const handleAddJob = async () => {
     try {
@@ -88,7 +92,7 @@ const AddJobPage = () => {
       setDateFollowedUp(null);
 
       alert("Job added successfully!");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error adding job:", error);
       alert("Error adding job: " + error.message);
     }

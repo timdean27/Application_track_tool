@@ -1,20 +1,32 @@
 import React, { useState } from 'react';
-import { TextField, Button, Grid, Typography, Switch,FormControlLabel, Divider } from '@mui/material';
+import { TextField, Button, Grid, Typography, Switch, FormControlLabel, Divider } from '@mui/material';
 
-const UpdateJobForm = ({ job, onUpdate }) => {
+// Define props interface with type definitions
+interface UpdateJobFormProps {
+  job: any;
+  onUpdate: (updatedJob: any) => Promise<void>;
+  onCancel: () => void; // Define onCancel prop
+}
+
+// Define functional component
+const UpdateJobForm: React.FC<UpdateJobFormProps> = ({ job, onUpdate, }) => {
+  // State hook for storing updated job data
   const [updatedJob, setUpdatedJob] = useState(job);
 
-  const handleChange = (e, field) => {
+  // Event handler for text field changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
     setUpdatedJob({ ...updatedJob, [field]: e.target.value });
   };
-  const handleDeclinedChange = (e) => {
+
+  // Event handler for switch change
+  const handleDeclinedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUpdatedJob({ ...updatedJob, declined: e.target.checked });
   };
 
+  // Event handler for form submission
   const handleSubmit = () => {
     onUpdate(updatedJob);
   };
-
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
