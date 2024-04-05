@@ -1,20 +1,32 @@
 import React, { useState } from 'react';
-import { TextField, Button, Grid, Typography, Switch,FormControlLabel, Divider } from '@mui/material';
+import { TextField, Button, Grid, Typography, Switch, FormControlLabel, Divider } from '@mui/material';
 
-const UpdateJobForm = ({ job, onUpdate }) => {
+// Define props interface with type definitions
+interface UpdateJobFormProps {
+  job: any;
+  onUpdate: (updatedJob: any) => Promise<void>;
+  onCancel: () => void; // Define onCancel prop
+}
+
+// Define functional component
+const UpdateJobForm: React.FC<UpdateJobFormProps> = ({ job, onUpdate, }) => {
+  // State hook for storing updated job data
   const [updatedJob, setUpdatedJob] = useState(job);
 
-  const handleChange = (e, field) => {
+  // Event handler for text field changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
     setUpdatedJob({ ...updatedJob, [field]: e.target.value });
   };
-  const handleDeclinedChange = (e) => {
+
+  // Event handler for switch change
+  const handleDeclinedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUpdatedJob({ ...updatedJob, declined: e.target.checked });
   };
 
+  // Event handler for form submission
   const handleSubmit = () => {
     onUpdate(updatedJob);
   };
-
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -103,8 +115,8 @@ const UpdateJobForm = ({ job, onUpdate }) => {
         <TextField
           label="Date of Screening Interview"
           type="date"
-          placeholder={job.dateOfScreeningInterview}
-          value = {updatedJob.dateOfScreeningInterview}
+          
+          value = {updatedJob.dateOfScreeningInterview ? updatedJob.dateOfScreeningInterview :"mm/dd/yyyy" }
           onChange={(e) => handleChange(e, 'dateOfScreeningInterview')}
           fullWidth
         />
@@ -122,8 +134,7 @@ const UpdateJobForm = ({ job, onUpdate }) => {
         <TextField
           label="Date of Coding Interview"
           type="date"
-          placeholder={job.dateOfCodingInterview}
-          value = {updatedJob.dateOfCodingInterview}
+          value = {updatedJob.dateOfCodingInterview ? updatedJob.dateOfCodingInterview :"mm/dd/yyyy" }
           onChange={(e) => handleChange(e, 'dateOfCodingInterview')}
           fullWidth
         />
@@ -140,9 +151,8 @@ const UpdateJobForm = ({ job, onUpdate }) => {
       <Grid item xs={12} sm={6}>
         <TextField
           label="Date of Behavior Interview"
-          type="date"
-          placeholder={job.dateOfBehaviorInterview}
-          value = {updatedJob.dateOfBehaviorInterview}
+          type="date" 
+          value = {updatedJob.dateOfBehaviorInterview ? updatedJob.dateOfBehaviorInterview :"mm/dd/yyyy" }
           onChange={(e) => handleChange(e, 'dateOfBehaviorInterview')}
           fullWidth
         />
@@ -152,7 +162,7 @@ const UpdateJobForm = ({ job, onUpdate }) => {
           label="Date Applied"
           type="date"
           placeholder={job.dateApplied}
-          value = {updatedJob.dateApplied}
+          value = {updatedJob.dateApplied ? updatedJob.dateApplied :"mm/dd/yyyy" }
           onChange={(e) => handleChange(e, 'dateApplied')}
           fullWidth
         />
@@ -180,7 +190,7 @@ const UpdateJobForm = ({ job, onUpdate }) => {
           label="Date Followed Up"
           type="date"
           placeholder={job.dateFollowedUp}
-          value = {updatedJob.dateFollowedUp}
+          value = {updatedJob.dateFollowedUp ? updatedJob.dateFollowedUp :"mm/dd/yyyy" }
           onChange={(e) => handleChange(e, 'dateFollowedUp')}
           fullWidth
         />

@@ -1,6 +1,6 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { ThemeProvider, createTheme, CssBaseline, Button } from '@mui/material';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import App from './App';
 
 // Define your Material-UI theme
@@ -17,14 +17,13 @@ const theme = createTheme({
   },
 });
 
-const reactRoot = createRoot(document.getElementById('root'));
-
-const ColorModeToggle = () => {
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+function ColorModeToggle() {
   // You can implement your own color mode toggle logic if needed
   return null;
-};
+}
 
-reactRoot.render(
+root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline /> {/* Apply Material-UI's baseline styles */}

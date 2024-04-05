@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+// Import necessary modules and components
+import  { useState, useEffect } from "react";
 import axios from "axios";
 import {
   Card,
@@ -8,74 +8,83 @@ import {
   CircularProgress,
   Button,
   Box,
+  Grid,
 } from "@mui/material";
 import UpdateJobForm from "../../Components/UpdateJobForm";
 
+// Define base URL for API requests
 const BASE_URL = "http://54.158.192.60:8090";
 
+// Define functional component for AllJobsPage
 const AllJobsPage: React.FC = () => {
+  // Define state variables
   const [jobs, setJobs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-  const [selectedJob, setSelectedJob] = useState<any>(null);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [isUpdateFormOpen, setIsUpdateFormOpen] = useState<boolean>(false);
   const [expandedJobs, setExpandedJobs] = useState<Record<string, boolean>>({});
 
+  // Define useEffect hook to fetch jobs data on component mount
   useEffect(() => {
     fetchJobs();
   }, []);
 
-  // Function to fetch all jobs
+  // Define function to fetch jobs data from API
   const fetchJobs = async () => {
     try {
       setIsLoading(true);
       const response = await axios.get(`${BASE_URL}/jobapplication`);
       setJobs(response.data);
       setIsLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       setIsLoading(false);
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
+      if (axios.isAxiosError(error) && error.response) {
         setError("Error: " + error.response.data);
-      } else if (error.request) {
-        // The request was made but no response was received
+      } else if (axios.isAxiosError(error) && error.request) {
         setError("Error: No response received from the server");
       } else {
-        // Something happened in setting up the request that triggered an Error
         setError("Error: " + error.message);
       }
     }
   };
 
-  // Function to handle deletion of a job
+  // Define function to delete a job by ID
   const handleDeleteJob = async (id: string) => {
     try {
       await axios.delete(`${BASE_URL}/jobapplication/${id}`);
-      fetchJobs(); // Refresh the job list after deletion
+      fetchJobs();
     } catch (error) {
       console.error("Error deleting job:", error);
-      // Handle error
     }
   };
 
-  // Function to handle update of a job
+  // Define function to update a job
   const handleUpdateJob = async (updatedJob: any) => {
     try {
       await axios.put(
         `${BASE_URL}/jobapplication/updates/${updatedJob.id}`,
         updatedJob
       );
-      fetchJobs(); // Refresh the job list after update
-      setSelectedJob(null); // Clear selected job
-      setIsUpdateFormOpen(false); // Close the update form
+      fetchJobs();
+      setIsUpdateFormOpen(false);
     } catch (error) {
       console.error("Error updating job:", error);
-      // Handle error
     }
   };
 
-  // Function to toggle job expansion
+  // Define function to handle job selection
+  const handleJobSelect = (jobId: string) => {
+    if (selectedJobId === jobId) {
+      setSelectedJobId(null);
+      setIsUpdateFormOpen(false);
+    } else {
+      setSelectedJobId(jobId);
+      setIsUpdateFormOpen(true);
+    }
+  };
+
+  // Define function to toggle job expansion
   const toggleJobExpansion = (id: string) => {
     setExpandedJobs((prevState) => ({
       ...prevState,
@@ -83,114 +92,118 @@ const AllJobsPage: React.FC = () => {
     }));
   };
 
+  // Render loading spinner while data is being fetched
   if (isLoading) {
     return <CircularProgress />;
   }
 
+  // Render error message if an error occurred
   if (error) {
-    return <div>Error: {error}</div>;
+    return <Typography variant="body1">Error: {error}</Typography>;
   }
 
+
+  
+  // Render job cards and update form
   return (
     <div>
-      <div>
-        <h1>All Jobs</h1>
-        <Link to="/">Add New Job</Link>
-      </div>
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
+      <Grid container spacing={2}>
         {jobs.map((job) => (
-          <Card
-            key={job.id}
-            sx={{
-              maxWidth: 345,
-              margin: 1,
-              backgroundColor: job.declined ? "#ffcccc" : "",
-            }}
-            onClick={() => toggleJobExpansion(job.id)}
-          >
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                {job.job} - {job.company}
-              </Typography>
-              {expandedJobs[job.id] && (
-                <>
-                  <Typography variant="body2" color="text.secondary">
-                    Description: {job.description}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Job Posting Link: {job.jobPostingLink}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Resume: {job.resume}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Cover Letter: {job.coverLetter}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Screening Interview: {job.screeningInterview}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Date of Screening Interview: {job.dateOfScreeningInterview}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Coding Interview: {job.codingInterview}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Date of Coding Interview: {job.dateOfCodingInterview}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Behavior Interview: {job.behaviorInterview}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Date of Behavior Interview: {job.dateOfBehaviorInterview}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Date Applied: {job.dateApplied}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Follow-up for Information: {job.followupForInformation}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Advice Received: {job.adviceReceived}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Date Followed Up: {job.dateFollowedUp}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Declined: {job.declined ? "True" : "False"}
-                  </Typography>
-                </>
-              )}
-              <Box mt={2}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => handleDeleteJob(job.id)}
-                >
-                  Delete
-                </Button>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  style={{ marginLeft: "8px" }}
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent card click event from firing
-                    setSelectedJob(job);
-                    setIsUpdateFormOpen(true);
-                  }}
-                >
-                  Update
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
+          <Grid item xs={12} sm={6} md={4} key={job.id}>
+            <Card
+              sx={{
+                border: "1px solid #f0f0f0",
+                borderRadius: "8px",
+                backgroundColor: job.declined ? "#ffcccc" : "",
+              }}
+              onClick={() => toggleJobExpansion(job.id)}
+            >
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                  {job.job} - {job.company}
+                </Typography>
+                {expandedJobs[job.id] && (
+                  <>
+                    <Typography variant="body2" color="text.secondary">
+                      Description: {job.description}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Job Posting Link: {job.jobPostingLink}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Resume: {job.resume}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Cover Letter: {job.coverLetter}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Screening Interview: {job.screeningInterview}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Date of Screening Interview:{" "}
+                      {job.dateOfScreeningInterview}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Coding Interview: {job.codingInterview}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Date of Coding Interview: {job.dateOfCodingInterview}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Behavior Interview: {job.behaviorInterview}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Date of Behavior Interview:{" "}
+                      {job.dateOfBehaviorInterview}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Date Applied: {job.dateApplied}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Follow-up for Information: {job.followupForInformation}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Advice Received: {job.adviceReceived}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Date Followed Up: {job.dateFollowedUp}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Declined: {job.declined ? "True" : "False"}
+                    </Typography>
+                  </>
+                )}
+                <Box mt={2} sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  {/* Buttons for deleting and updating job */}
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleDeleteJob(job.id)}
+                  >
+                    Delete
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    style={{ marginLeft: "8px" }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleJobSelect(job.id);
+                    }}
+                  >
+                    Update
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
         ))}
-      </div>
-      {/* Render update form if selectedJob is not null and isUpdateFormOpen is true */}
-      {selectedJob && isUpdateFormOpen && (
+      </Grid>
+      {/* Render update job form if update form is open */}
+      {isUpdateFormOpen && (
         <div style={{ marginTop: "20px" }}>
           <UpdateJobForm
-            job={selectedJob}
+            job={jobs.find((job) => job.id === selectedJobId)}
             onUpdate={handleUpdateJob}
             onCancel={() => setIsUpdateFormOpen(false)}
           />
