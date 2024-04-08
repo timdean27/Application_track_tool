@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 
-const BASE_URL = "http://54.158.192.60:8090";
+const BASE_URL = "http://34.227.157.5:8090";
 
 const AddJobPage = () => {
   const [job, setJob] = useState<string>("");
