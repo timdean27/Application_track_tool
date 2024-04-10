@@ -1,11 +1,22 @@
 import React, { useState } from "react";
-import { TextField, Button, Box, FormControlLabel, Checkbox, Select, MenuItem, InputLabel } from "@mui/material";
+import {
+  SelectChangeEvent,
+  TextField,
+  Button,
+  Box,
+  FormControlLabel,
+  Checkbox,
+  Select,
+  MenuItem,
+  InputLabel,
+} from "@mui/material";
 
 interface FilterOptions {
   sortByDate: string;
   showDeclined: boolean;
   showEmptyAppliedDate: boolean;
   company: string;
+  hideAppliedTo: boolean; // New property to hide jobs applied to
 }
 
 interface FilterCompProps {
@@ -21,47 +32,69 @@ const FilterComp: React.FC<FilterCompProps> = ({
   const [sortByDate, setSortByDate] = useState("");
 
   const handleSearch = () => {
-    setFilterOptions({ ...filterOptions, company: company.trim() }); // Update company in filterOptions
+    setFilterOptions({ ...filterOptions, company: company.trim() });
   };
 
   const handleClear = () => {
     setCompany("");
-    setFilterOptions({ ...filterOptions, company: "" }); // Clear company in filterOptions
+    setFilterOptions({ ...filterOptions, company: "" });
   };
 
-  const handleSortChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setSortByDate(event.target.value as string);
-    setFilterOptions({ ...filterOptions, sortByDate: event.target.value as string });
+  const handleSortChange = (event: SelectChangeEvent<string>) => {
+    setSortByDate(event.target.value);
+    setFilterOptions({ ...filterOptions, sortByDate: event.target.value });
   };
 
-  const handleShowDeclinedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleShowDeclinedChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setFilterOptions({ ...filterOptions, showDeclined: !event.target.checked });
   };
 
-  const handleShowEmptyAppliedDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilterOptions({ ...filterOptions, showEmptyAppliedDate: !event.target.checked });
+  const handleShowEmptyAppliedDateChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFilterOptions({
+      ...filterOptions,
+      showEmptyAppliedDate: !event.target.checked,
+    });
+  };
+
+  const handleHideAppliedToChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFilterOptions({ ...filterOptions, hideAppliedTo: event.target.checked });
   };
 
   return (
     <Box sx={{ marginBottom: 2 }}>
-      <TextField
-        label="Search by Company Name"
-        variant="outlined"
-        value={company}
-        onChange={(e) => setCompany(e.target.value)}
-        style={{ marginRight: "16px" }}
-      />
+      <Box mb={1} border={1} borderColor="grey.300" borderRadius="4px" p={1}>
+        <TextField
+          label="Search by Company Name"
+          variant="outlined"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+          style={{ marginRight: "16px" }}
+        />
+        <Button variant="contained" color="primary" onClick={handleSearch}>
+          Search
+        </Button>
+        <Button variant="contained" color="secondary" onClick={handleClear}>
+          Clear
+        </Button>
+      </Box>
       <InputLabel htmlFor="sort-by-date">Sort by Date:</InputLabel>
       <Select
         id="sort-by-date"
         value={sortByDate}
-        onChange={() => handleSortChange}
+        onChange={handleSortChange}
         style={{ marginRight: "16px", marginLeft: "8px" }}
       >
         <MenuItem value="">None</MenuItem>
         <MenuItem value="asc">Ascending</MenuItem>
         <MenuItem value="desc">Descending</MenuItem>
       </Select>
+
       <FormControlLabel
         control={
           <Checkbox
@@ -82,16 +115,18 @@ const FilterComp: React.FC<FilterCompProps> = ({
         }
         label="Hide Jobs Not Applied To"
       />
-      <Button variant="contained" color="primary" onClick={handleSearch}>
-        Search
-      </Button>
-      <Button variant="contained" color="secondary" onClick={handleClear}>
-        Clear
-      </Button>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={filterOptions.hideAppliedTo}
+            onChange={handleHideAppliedToChange}
+            color="primary"
+          />
+        }
+        label="Hide Jobs Applied To"
+      />
     </Box>
   );
 };
 
 export default FilterComp;
-
-

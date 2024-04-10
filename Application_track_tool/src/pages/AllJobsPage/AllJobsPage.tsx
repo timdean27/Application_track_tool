@@ -30,6 +30,7 @@ const AllJobsPage: React.FC = () => {
     sortByDate: "",
     showDeclined: true,
     showEmptyAppliedDate: true,
+    hideAppliedTo: false, // Added hideAppliedTo option
   });
 
   useEffect(() => {
@@ -93,36 +94,51 @@ const AllJobsPage: React.FC = () => {
     }));
   };
 
-  const sortJobsByAppliedDate = (jobs: any[], sortByDate: string) => {
-    if (sortByDate === "asc") {
-      return [...jobs].sort((a, b) => {
-        if (!a.dateApplied) return 1;
-        if (!b.dateApplied) return -1;
-        return new Date(a.dateApplied).getTime() - new Date(b.dateApplied).getTime();
-      });
-    } else if (sortByDate === "desc") {
-      return [...jobs].sort((a, b) => {
-        if (!a.dateApplied) return -1;
-        if (!b.dateApplied) return 1;
-        return new Date(b.dateApplied).getTime() - new Date(a.dateApplied).getTime();
-      });
-    } else {
-      return jobs;
-    }
-  };
-
   const filterJobs = (jobs: any[], filterOptions: any) => {
-    return jobs.filter((job) => {
+    if (!jobs || jobs.length === 0) {
+      return [];
+    }
+
+    // Sort jobs based on applied date
+    let sortedJobs = sortJobsByAppliedDate(jobs, filterOptions.sortByDate);
+
+    return sortedJobs.filter((job) => {
+      // Filter by company name
+      if (
+        filterOptions.company &&
+        job.company.toLowerCase().indexOf(filterOptions.company.toLowerCase()) === -1
+      ) {
+        return false;
+      }
+      // Filter by other options
       if (!filterOptions.showDeclined && job.declined) return false;
       if (!filterOptions.showEmptyAppliedDate && !job.dateApplied) return false;
+      if (filterOptions.hideAppliedTo && job.dateApplied) return false; // Hide applied jobs
       return true;
     });
   };
 
-  const sortedAndFilteredJobs = filterJobs(
-    sortJobsByAppliedDate(jobs, filterOptions.sortByDate),
-    filterOptions
-  );
+  const sortJobsByAppliedDate = (jobs: any[], sortByDate: string) => {
+    const hasDate = (job: any) => !!job.dateApplied;
+
+    // Sort jobs based on the sortByDate parameter
+    return jobs.slice().sort((a, b) => {
+      if (!hasDate(a) && !hasDate(b)) return 0;
+      if (!hasDate(a)) return 1;
+      if (!hasDate(b)) return -1;
+
+      const dateA = new Date(a.dateApplied).getTime();
+      const dateB = new Date(b.dateApplied).getTime();
+
+      if (sortByDate === "asc") {
+        return dateA - dateB;
+      } else if (sortByDate === "desc") {
+        return dateB - dateA;
+      } else {
+        return 0; // No sorting needed
+      }
+    });
+  };
 
   if (isLoading) {
     return <CircularProgress />;
@@ -132,6 +148,8 @@ const AllJobsPage: React.FC = () => {
     return <Typography variant="body1">Error: {error}</Typography>;
   }
 
+  const filteredJobs = filterJobs(jobs, filterOptions);
+
   return (
     <div>
       <FilterComp
@@ -139,74 +157,303 @@ const AllJobsPage: React.FC = () => {
         setFilterOptions={setFilterOptions}
       />
       <Grid container spacing={2}>
-        {sortedAndFilteredJobs.map((job) => (
+        {filteredJobs.map((job) => (
           <Grid item xs={12} sm={6} md={4} key={job.id}>
             <Card
               sx={{
                 border: "1px solid #f0f0f0",
                 borderRadius: "8px",
-                backgroundColor: job.declined ? "#ffcccc" : job.dateApplied ? "#86b1fc" : "",
+                backgroundColor: job.declined
+                  ? "#ffcccc"
+                  : job.dateApplied
+                  ? "#86b1fc"
+                  : "",
               }}
-              onClick={() => toggleJobExpansion(job.id)}
+              onClick={
+                !expandedJobs[job.id]
+                  ? () => toggleJobExpansion(job.id)
+                  : undefined
+              }
+              onDoubleClick={
+                expandedJobs[job.id]
+                  ? () => toggleJobExpansion(job.id)
+                  : undefined
+              }
             >
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
+              <CardContent style={{ paddingRight: "16px" }}>
+                <Typography gutterBottom variant="h5" component="div">
+                  <Box fontWeight="bold">
                     {job.job} - {job.company}
-                  </Typography>
-                  {expandedJobs[job.id] && (
-                    <>
-                      <Typography variant="body2" color="text.secondary">
-                        Description: {job.description}
+                  </Box>
+                </Typography>
+                {expandedJobs[job.id] && (
+                  <>
+                    <Box
+                      mb={1}
+                      border={1}
+                      borderColor="grey.300"
+                      borderRadius="4px"
+                      p={1}
+                    >
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflowWrap: "break-word" }}
+                      >
+                        <Box fontWeight="bold">Description:</Box>{" "}
+                        {job.description}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Job Posting Link: {job.jobPostingLink}
+                    </Box>
+                    <Box
+                      mb={1}
+                      border={1}
+                      borderColor="grey.300"
+                      borderRadius="4px"
+                      p={1}
+                    >
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflowWrap: "break-word" }}
+                      >
+                        <Box fontWeight="bold">Job Posting Link:</Box>{" "}
+                        <a
+                          href={job.jobPostingLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {job.jobPostingLink ? "CLICK" : ""}
+                        </a>
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Resume: {job.resume}
+                    </Box>
+                    <Box
+                      mb={1}
+                      border={1}
+                      borderColor="grey.300"
+                      borderRadius="4px"
+                      p={1}
+                    >
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflowWrap: "break-word" }}
+                      >
+                        <Box fontWeight="bold">Resume Link:</Box>{" "}
+                        <a
+                          href={job.resume}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {job.resume ? "CLICK" : ""}
+                        </a>
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Cover Letter: {job.coverLetter}
+                    </Box>
+                    <Box
+                      mb={1}
+                      border={1}
+                      borderColor="grey.300"
+                      borderRadius="4px"
+                      p={1}
+                    >
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflowWrap: "break-word" }}
+                      >
+                        <Box fontWeight="bold">Cover Letter Link:</Box>{" "}
+                        <a
+                          href={job.coverLetter}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {job.coverLetter ? "CLICK" : ""}
+                        </a>
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Screening Interview: {job.screeningInterview}
+                    </Box>
+                    <Box
+                      mb={1}
+                      border={1}
+                      borderColor="grey.300"
+                      borderRadius="4px"
+                      p={1}
+                    >
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflowWrap: "break-word" }}
+                      >
+                        <Box fontWeight="bold">Screening Interview:</Box>{" "}
+                        {job.screeningInterview}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Date of Screening Interview:{" "}
+                    </Box>
+                    <Box
+                      mb={1}
+                      border={1}
+                      borderColor="grey.300"
+                      borderRadius="4px"
+                      p={1}
+                    >
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflowWrap: "break-word" }}
+                      >
+                        <Box fontWeight="bold">
+                          Date of Screening Interview:
+                        </Box>{" "}
                         {job.dateOfScreeningInterview}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Coding Interview: {job.codingInterview}
+                    </Box>
+                    <Box
+                      mb={1}
+                      border={1}
+                      borderColor="grey.300"
+                      borderRadius="4px"
+                      p={1}
+                    >
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflowWrap: "break-word" }}
+                      >
+                        <Box fontWeight="bold">Coding Interview:</Box>{" "}
+                        {job.codingInterview}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Date of Coding Interview:{" "}
+                    </Box>
+                    <Box
+                      mb={1}
+                      border={1}
+                      borderColor="grey.300"
+                      borderRadius="4px"
+                      p={1}
+                    >
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflowWrap: "break-word" }}
+                      >
+                        <Box fontWeight="bold">Date of Coding Interview:</Box>{" "}
                         {job.dateOfCodingInterview}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Behavior Interview: {job.behaviorInterview}
+                    </Box>
+                    <Box
+                      mb={1}
+                      border={1}
+                      borderColor="grey.300"
+                      borderRadius="4px"
+                      p={1}
+                    >
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflowWrap: "break-word" }}
+                      >
+                        <Box fontWeight="bold">Behavior Interview:</Box>{" "}
+                        {job.behaviorInterview}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Date of Behavior Interview:{" "}
+                    </Box>
+                    <Box
+                      mb={1}
+                      border={1}
+                      borderColor="grey.300"
+                      borderRadius="4px"
+                      p={1}
+                    >
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflowWrap: "break-word" }}
+                      >
+                        <Box fontWeight="bold">
+                          Date of Behavior Interview:
+                        </Box>{" "}
                         {job.dateOfBehaviorInterview}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Date Applied: {job.dateApplied}
+                    </Box>
+                    <Box
+                      mb={1}
+                      border={1}
+                      borderColor="grey.300"
+                      borderRadius="4px"
+                      p={1}
+                    >
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflowWrap: "break-word" }}
+                      >
+                        <Box fontWeight="bold">Date Applied:</Box>{" "}
+                        {job.dateApplied}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Follow-up for Information:{" "}
+                    </Box>
+                    <Box
+                      mb={1}
+                      border={1}
+                      borderColor="grey.300"
+                      borderRadius="4px"
+                      p={1}
+                    >
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflowWrap: "break-word" }}
+                      >
+                        <Box fontWeight="bold">
+                          Follow-up for Information:
+                        </Box>{" "}
                         {job.followupForInformation}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Advice Received: {job.adviceReceived}
+                    </Box>
+                    <Box
+                      mb={1}
+                      border={1}
+                      borderColor="grey.300"
+                      borderRadius="4px"
+                      p={1}
+                    >
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflowWrap: "break-word" }}
+                      >
+                        <Box fontWeight="bold">Advice Received:</Box>{" "}
+                        {job.adviceReceived}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Date Followed Up: {job.dateFollowedUp}
+                    </Box>
+                    <Box
+                      mb={1}
+                      border={1}
+                      borderColor="grey.300"
+                      borderRadius="4px"
+                      p={1}
+                    >
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflowWrap: "break-word" }}
+                      >
+                        <Box fontWeight="bold">Date Followed Up:</Box>{" "}
+                        {job.dateFollowedUp}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Declined: {job.declined ? "True" : "False"}
+                    </Box>
+                    <Box
+                      border={1}
+                      borderColor="grey.300"
+                      borderRadius="4px"
+                      p={1}
+                    >
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ overflowWrap: "break-word" }}
+                      >
+                        <Box fontWeight="bold">Declined:</Box>{" "}
+                        {job.declined ? "True" : "False"}
                       </Typography>
-                    </>
-                  )}
-                          <Box mt={2} sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    </Box>
+                  </>
+                )}
+                  <Box mt={2} sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <Button
                     variant="contained"
                     color="primary"
