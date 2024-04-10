@@ -8,11 +8,6 @@ import {
   Button,
   Box,
   Grid,
-  FormControlLabel,
-  Checkbox,
-  Select,
-  MenuItem,
-  InputLabel,
 } from "@mui/material";
 import UpdateJobForm from "../../Components/UpdateJobForm";
 import FilterComp from "../../Components/FilterComp/FilterComp";
