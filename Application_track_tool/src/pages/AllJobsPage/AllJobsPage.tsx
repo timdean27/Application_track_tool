@@ -1,4 +1,3 @@
-// Import necessary modules and components
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -9,6 +8,11 @@ import {
   Button,
   Box,
   Grid,
+  FormControlLabel,
+  Checkbox,
+  Select,
+  MenuItem,
+  InputLabel,
 } from "@mui/material";
 import UpdateJobForm from "../../Components/UpdateJobForm";
 import FilterComp from "../../Components/FilterComp/FilterComp";
@@ -24,18 +28,17 @@ const AllJobsPage: React.FC = () => {
   const [expandedJobs, setExpandedJobs] = useState<Record<string, boolean>>({});
   const [filterOptions, setFilterOptions] = useState<any>({
     sortByDate: "",
-    showDeclined: false,
-    company: "", // Change to 'company' instead of 'companyName'
+    showDeclined: true,
+    showEmptyAppliedDate: true,
   });
 
   useEffect(() => {
     fetchJobs();
-  }, [filterOptions]); // Update jobs when filter options change
+  }, []); // Fetch all jobs when the component mounts
 
   const fetchJobs = async () => {
     try {
       setIsLoading(true);
-      console.log("Filter options:", filterOptions);
       const response = await axios.get(`${BASE_URL}/jobapplication`);
       setJobs(response.data);
       setIsLoading(false);
@@ -90,6 +93,37 @@ const AllJobsPage: React.FC = () => {
     }));
   };
 
+  const sortJobsByAppliedDate = (jobs: any[], sortByDate: string) => {
+    if (sortByDate === "asc") {
+      return [...jobs].sort((a, b) => {
+        if (!a.dateApplied) return 1;
+        if (!b.dateApplied) return -1;
+        return new Date(a.dateApplied).getTime() - new Date(b.dateApplied).getTime();
+      });
+    } else if (sortByDate === "desc") {
+      return [...jobs].sort((a, b) => {
+        if (!a.dateApplied) return -1;
+        if (!b.dateApplied) return 1;
+        return new Date(b.dateApplied).getTime() - new Date(a.dateApplied).getTime();
+      });
+    } else {
+      return jobs;
+    }
+  };
+
+  const filterJobs = (jobs: any[], filterOptions: any) => {
+    return jobs.filter((job) => {
+      if (!filterOptions.showDeclined && job.declined) return false;
+      if (!filterOptions.showEmptyAppliedDate && !job.dateApplied) return false;
+      return true;
+    });
+  };
+
+  const sortedAndFilteredJobs = filterJobs(
+    sortJobsByAppliedDate(jobs, filterOptions.sortByDate),
+    filterOptions
+  );
+
   if (isLoading) {
     return <CircularProgress />;
   }
@@ -105,24 +139,16 @@ const AllJobsPage: React.FC = () => {
         setFilterOptions={setFilterOptions}
       />
       <Grid container spacing={2}>
-        {jobs
-          .filter((job) =>
-            filterOptions.company
-              ? job.company
-                  .toLowerCase()
-                  .includes(filterOptions.company.toLowerCase())
-              : true
-          )
-          .map((job) => (
-            <Grid item xs={12} sm={6} md={4} key={job.id}>
-              <Card
-                sx={{
-                  border: "1px solid #f0f0f0",
-                  borderRadius: "8px",
-                  backgroundColor: job.declined ? "#ffcccc" : "",
-                }}
-                onClick={() => toggleJobExpansion(job.id)}
-              >
+        {sortedAndFilteredJobs.map((job) => (
+          <Grid item xs={12} sm={6} md={4} key={job.id}>
+            <Card
+              sx={{
+                border: "1px solid #f0f0f0",
+                borderRadius: "8px",
+                backgroundColor: job.declined ? "#ffcccc" : job.dateApplied ? "#86b1fc" : "",
+              }}
+              onClick={() => toggleJobExpansion(job.id)}
+            >
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
                     {job.job} - {job.company}
